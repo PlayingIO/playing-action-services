@@ -5,29 +5,29 @@ import { models as contents } from 'playing-content-services';
 
 // metric based condition
 const metricCondition = {
-  id: { type: 'String' },                   // id of metric/action/team,
-  type: { type: 'String' },                 // type of metric
-  item: { type: 'String' },                 // set item to be compared
+  id: { type: 'String' },                    // id of metric
+  type: { type: 'String' },                  // type of metric
+  item: { type: 'String' },                  // set item to be compared
   operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                // value of the metric/time
+  value: { type: 'String' },                 // value of the metric/time
 };
 
 // action based condition
 const actionCondition = {
-  id: { type: 'String' },                   // id of metric/action/team,
+  id: { type: 'String' },                    // id of action
   operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                // value of the metric/time
+  value: { type: 'String' },                 // number of times the action should be executed by the player
 };
 
 // team based condition
 const teamCondition = {
-  id: { type: 'String' },                   // id of metric/action/team,
-  role: { type: 'String' },                 // role the player should have
+  id: { type: 'String' },                    // id of team,
+  role: { type: 'String' },                  // role the player should have
 };
 
 // timed condition
 const timedCondition = {
-  time: { type: 'String', enum: [          // time unit to be counted, against a fixed duration
+  time: { type: 'String', enum: [            // time unit to be counted, against a fixed duration
     'hour_of_day',
     'day_of_week',
     'day_of_month',
@@ -36,27 +36,49 @@ const timedCondition = {
     'month_of_year'
   ]},
   operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                // value of the metric/time
+  value: { type: 'String' },                 // count of the unit
 };
 
 // formula based condition
 const formulaCondition = {
-  lhs: { type: 'String' },                 // lhs formula
+  lhs: { type: 'String' },                   // lhs formula
   operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  rhs: { type: 'String' },                 // rhs formula
+  rhs: { type: 'String' },                   // rhs formula
 };
 
 const condition = fp.mergeAll(
-  metricCondition, actionCondition, teamCondition,
-  timedCondition, formulaCondition
+  metricCondition,
+  actionCondition,
+  teamCondition,
+  timedCondition,
+  formulaCondition
 );
 
-// Requires Structure
+// requires structure
 const requires = {
   type: { type: 'String', enum: ['metric', 'action', 'team', 'and', 'or'] }, // type of condition
-  not: { type: 'Boolean' },                 // whether invert the condition
-  conditions: [condition],                  // array of conditions joined with an AND or OR operator (for condition type and/or)
+  not: { type: 'Boolean' },                  // whether invert the condition
+  conditions: [condition],                   // array of conditions joined with an AND or OR operator (for condition type and/or)
   condition: condition
+};
+
+// reward structure
+const reward = {
+  metric: {                                  // the metric which will be used for the reward
+    id: { type: 'ObjectId' },                // ID of the metric
+    type: { type: 'String' },                // type of the metric
+  },
+  probabilty: { type: 'Number' },            // chance [0, 1] that this reward in an action or process task can be given
+  verb: { type: 'String', enum: ['add', 'remove', 'set'] }, // operation is performed for this reward
+  value: { type: 'String' }                  // value by which the player's score changes
+};
+
+// variable structure
+const variable = {                           // dynamic contents for evaluating rules when an action is performed
+  name: { type: 'String' },                  // name of the variable
+  type: { type: 'String', enum:['string', 'number'] }, // type of the variable
+  required: { type: 'Boolean' },             // whether the variable is required
+  default: { type: 'String' },               // default value of the variable
 };
 
 /*
@@ -67,30 +89,17 @@ const fields = {
   description: { type: 'String' },           // brief description of the action
   image: contents.blob.schema,               // image which represents the action
   probability: { type: 'Number' },           // probability that the player gets the rewards on completing the action
-  rate: [{                                   // array of limitings of an action
+  rate: {                                    // array of limitings of an action
     count: { type: 'Number' },               // number of times the player can perform this action within the window
     timeframe: { type: 'Number' },           // milliseconds of the window or timeframe
     type: { type: 'String', enum: ['rolling', 'fixed', 'leaky'] }, // type of rate limiting being used
-  }],
+  },
   requires: requires,
   rules: [{
-    rewards: [{
-      metric: {                              // the metric which will be used for the reward
-        id: { type: 'ObjectId' },            // ID of the metric
-        type: { type: 'String' },            // type of the metric
-      },
-      probabilty: { type: 'Number' },        // chance [0, 1] that this reward in an action or process task can be given
-      verb: { type: 'String', enum: ['add', 'remove', 'set'] }, // operation is performed for this reward
-      value: { type: 'String' }              // value by which the player's score changes
-    }],
+    rewards: [reward],
     requires: requires
   }],
-  variables: [{                              // dynamic contents for evaluating rules when an action is performed
-    name: { type: 'String' },                // name of the variable
-    type: { type: 'String', enum:['string', 'number'] }, // type of the variable
-    required: { type: 'Boolean' },           // whether the variable is required
-    default: { type: 'String' },             // default value of the variable
-  }]
+  variables: [variable]
 };
 
 export default function model (app, name) {
