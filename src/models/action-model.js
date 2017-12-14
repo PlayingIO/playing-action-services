@@ -1,85 +1,10 @@
 import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
 import { models as contents } from 'playing-content-services';
 
-// metric based condition
-const metricCondition = {
-  id: { type: 'String' },                    // id of metric
-  type: { type: 'String' },                  // type of metric
-  item: { type: 'String' },                  // set item to be compared
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                 // value of the metric/time
-};
-
-// action based condition
-const actionCondition = {
-  id: { type: 'String' },                    // id of action
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                 // number of times the action should be executed by the player
-};
-
-// team based condition
-const teamCondition = {
-  id: { type: 'String' },                    // id of team,
-  role: { type: 'String' },                  // role the player should have
-};
-
-// timed condition
-const timedCondition = {
-  time: { type: 'String', enum: [            // time unit to be counted, against a fixed duration
-    'hour_of_day',
-    'day_of_week',
-    'day_of_month',
-    'day_of_year',
-    'week_of_year',
-    'month_of_year'
-  ]},
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  value: { type: 'String' },                 // count of the unit
-};
-
-// formula based condition
-const formulaCondition = {
-  lhs: { type: 'String' },                   // lhs formula
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
-  rhs: { type: 'String' },                   // rhs formula
-};
-
-const condition = fp.mergeAll(
-  metricCondition,
-  actionCondition,
-  teamCondition,
-  timedCondition,
-  formulaCondition
-);
-
-// requires structure
-const requires = {
-  type: { type: 'String', enum: ['metric', 'action', 'team', 'and', 'or'] }, // type of condition
-  not: { type: 'Boolean' },                  // whether invert the condition
-  conditions: [condition],                   // array of conditions joined with an AND or OR operator (for condition type and/or)
-  condition: condition
-};
-
-// reward structure
-const reward = {
-  metric: {                                  // the metric which will be used for the reward
-    id: { type: 'ObjectId' },                // ID of the metric
-    type: { type: 'String' },                // type of the metric
-  },
-  probabilty: { type: 'Number' },            // chance [0, 1] that this reward in an action or process task can be given
-  verb: { type: 'String', enum: ['add', 'remove', 'set'] }, // operation is performed for this reward
-  value: { type: 'String' }                  // value by which the player's score changes
-};
-
-// variable structure
-const variable = {                           // dynamic contents for evaluating rules when an action is performed
-  name: { type: 'String' },                  // name of the variable
-  type: { type: 'String', enum:['string', 'number'] }, // type of the variable
-  required: { type: 'Boolean' },             // whether the variable is required
-  default: { type: 'String' },               // default value of the variable
-};
+import { requires } from './requires-schema';
+import { reward } from './reward-schema';
+import { variable } from './variable-schema';
 
 /*
  * Actions are a way of capturing player events/actions.
