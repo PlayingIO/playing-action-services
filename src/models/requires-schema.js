@@ -5,14 +5,18 @@ const metricCondition = {
   id: { type: 'String' },                    // id of metric
   type: { type: 'String' },                  // type of metric
   item: { type: 'String' },                  // set item to be compared
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
+  operator: { type: 'String', enum: [        // relational operator
+    'eq', 'ne', 'gt', 'ge', 'lt', 'le'
+  ]},
   value: { type: 'String' },                 // value of the metric/time
 };
 
 // action based condition
 const actionCondition = {
   id: { type: 'String' },                    // id of action
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
+  operator: { type: 'String', enum: [        // relational operator
+    'eq', 'ne', 'gt', 'ge', 'lt', 'le'
+  ]},
   value: { type: 'String' },                 // number of times the action should be executed by the player
 };
 
@@ -32,14 +36,18 @@ const timedCondition = {
     'week_of_year',
     'month_of_year'
   ]},
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
+  operator: { type: 'String', enum: [        // relational operator
+    'eq', 'ne', 'gt', 'ge', 'lt', 'le'
+  ]},
   value: { type: 'String' },                 // count of the unit
 };
 
 // formula based condition
 const formulaCondition = {
   lhs: { type: 'String' },                   // lhs formula
-  operator: { type: 'String', enum: ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] }, // relational operator
+  operator: { type: 'String', enum: [        // relational operator
+    'eq', 'ne', 'gt', 'ge', 'lt', 'le'
+  ]},
   rhs: { type: 'String' },                   // rhs formula
 };
 
@@ -53,7 +61,13 @@ const condition = fp.mergeAll(
 
 // requires structure
 const requires = {
-  type: { type: 'String', enum: ['metric', 'action', 'team', 'and', 'or'] }, // type of condition
+  type: { type: 'String', enum: [            // type of condition
+    'metric',
+    'action',
+    'team',
+    'and',
+    'or'
+  ]},
   not: { type: 'Boolean' },                  // whether invert the condition
   conditions: [condition],                   // array of conditions joined with an AND or OR operator (for condition type and/or)
   condition: condition

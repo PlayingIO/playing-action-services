@@ -5,7 +5,9 @@ const reward = {
     type: { type: 'String' },                // type of the metric
   },
   probabilty: { type: 'Number' },            // chance [0, 1] that this reward in an action or process task can be given
-  verb: { type: 'String', enum: ['add', 'remove', 'set'] }, // operation is performed for this reward
+  verb: { type: 'String', enum: [            // operation is performed for this reward
+    'add', 'remove', 'set'
+  ]},
   value: { type: 'String' }                  // value by which the player's score changes
 };
 

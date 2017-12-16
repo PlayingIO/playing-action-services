@@ -38,7 +38,11 @@ const custom = {
 const fields = {
   name: { type: 'String', required: true },  // name for the rule
   description: { type: 'String' },           // brief description of the rule
-  type: { type: 'String', enum: ['achievement', 'level', 'custom'] }, //  type of rule
+  type: { type: 'String', enum: [            //  type of rule
+    'achievement',
+    'level',
+    'custom'
+  ]},
   achievement: achievement,                  // achievement rule
   level: level,                              // level rule
   custom: custom,                            // custom rule
