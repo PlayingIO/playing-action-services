@@ -53,3 +53,4 @@ export default function model (app, name) {
 }
 
 model.schema = fields;
+model.requires = requires;
