@@ -8,7 +8,9 @@ const reward = {
   verb: { type: 'String', enum: [            // operation is performed for this reward
     'add', 'remove', 'set'
   ]},
-  value: { type: 'String' }                  // value by which the player's score changes
+  value: { type: 'String' },                 // value by which the player's score changes
+  recur: { type: 'Boolean' },                // apply the reward on every loop of the looped task
+  resolution: { type: 'String' },            // delay the rewards until the resolution task
 };
 
 export default { reward }

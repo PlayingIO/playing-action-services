@@ -2,6 +2,7 @@ import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 
+import { rate } from './rate-schema';
 import { requires } from './requires-schema';
 import { reward } from './reward-schema';
 import { variable } from './variable-schema';
@@ -57,5 +58,6 @@ export default function model (app, name) {
 }
 
 model.schema = fields;
+model.rate = rate;
 model.rewards = [reward];
 model.requires = requires;
