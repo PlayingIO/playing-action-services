@@ -1,7 +1,7 @@
 {
-  "name": "playing-actions-services",
+  "name": "playing-action-services",
   "version": "1.0.0",
-  "description": "Game actions management microservices for playful applications",
+  "description": "Game action management microservices for playful applications",
   "author": "Forafish",
   "license": "MIT",
   "main": "index.js",
