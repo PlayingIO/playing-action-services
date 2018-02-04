@@ -4,7 +4,6 @@ import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 
 import { rate } from './rate-schema';
-import { variable } from './variable-schema';
 
 /*
  * Actions are a way of capturing player events/actions.
@@ -17,10 +16,10 @@ const fields = {
   rate: rate,                                // rate limiting an action
   requires: rules.rule.requires,
   rules: [{                                  // rules to be evaluated to give rewards to the player
-    rewards: rules.rule.rewards,            // metrics that a player gets when he finishes this action
+    rewards: rules.rule.rewards,             // metrics that a player gets when he finishes this action
     requires: rules.rule.requires            // conditions which are checked to see if the player is suitable to get this reward
   }],
-  variables: [variable]
+  variables: rules.rule.variables            // variables available within this action
 };
 
 export default function model (app, name) {
