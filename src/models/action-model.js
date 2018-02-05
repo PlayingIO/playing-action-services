@@ -19,7 +19,8 @@ const fields = {
     rewards: rules.rule.rewards,             // metrics that a player gets when he finishes this action
     requires: rules.rule.requires            // conditions which are checked to see if the player is suitable to get this reward
   }],
-  variables: rules.rule.variables            // variables available within this action
+  variables: rules.rule.variables,           // variables available within this action
+  tags: [{ type: 'String' }],                // the tags of the rule
 };
 
 export default function model (app, name) {
