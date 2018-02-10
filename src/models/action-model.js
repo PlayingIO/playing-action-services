@@ -9,10 +9,10 @@ import { rate } from './rate-schema';
  * Actions are a way of capturing player events/actions.
  */
 const fields = {
-  name: { type: 'String', required: true },  // name for the action
-  description: { type: 'String' },           // brief description of the action
+  name: { type: String, required: true },    // name for the action
+  description: { type: String },             // brief description of the action
   image: contents.blob.schema,               // image which represents the action
-  probability: { type: 'Number' },           // probability that the player gets the rewards on completing the action
+  probability: { type: Number },             // probability that the player gets the rewards on completing the action
   rate: rate,                                // rate limiting an action
   requires: rules.rule.requires,
   rules: [{                                  // rules to be evaluated to give rewards to the player
@@ -20,7 +20,7 @@ const fields = {
     requires: rules.rule.requires            // conditions which are checked to see if the player is suitable to get this reward
   }],
   variables: rules.rule.variables,           // variables available within this action
-  tags: [{ type: 'String' }],                // the tags of the rule
+  tags: [{ type: String }],                  // the tags of the rule
 };
 
 export default function model (app, name) {
