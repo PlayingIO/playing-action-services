@@ -12,7 +12,7 @@ const fields = {
   name: { type: String, required: true },    // name for the action
   description: { type: String },             // brief description of the action
   image: contents.blob.schema,               // image which represents the action
-  probability: { type: Number },             // probability that the player gets the rewards on completing the action
+  chance: { type: Number, default: 100 },    // probability percentage that the player gets the rewards on completing the action
   rate: rate,                                // rate limiting an action
   requires: rules.rule.requires,
   rules: [{                                  // rules to be evaluated to give rewards to the player
