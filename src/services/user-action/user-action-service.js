@@ -25,9 +25,25 @@ class UserActionService extends Service {
   find(params) {
     params = params || { query: {} };
     const srvActions = this.app.service('actions');
-    return srvActions.find(params).then(results => {
-      // TODO filter by requirements
-      return results;
+    return srvActions.find({ query: {
+      $select: ['rules.rewards.metric', '*']
+    }}).then(results => {
+      const data = results && results.data || results;
+      const fulfillRequires = cond => { return true; }; // TODO
+      const validActions = fp.reduce((arr, action) => {
+        // filter by visibility requirements
+        if (fulfillRequires(action.requires)) {
+          const validRules = fp.filter(rule => {
+            return fp.all(fulfillRequires, rule.requires);
+          }, action.rules);
+          const rewards = fp.flatten(fp.map(fp.prop('rewards'), validRules));
+          action = fp.omit(['rules', 'requires', 'rate'], action);
+          action.actions = rewards;
+          return arr.concat(action);
+        }
+        return arr;
+      }, [], data);
+      return validActions;
     });
   }
 }
