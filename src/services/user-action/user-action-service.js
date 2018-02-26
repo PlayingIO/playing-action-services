@@ -24,11 +24,18 @@ class UserActionService extends Service {
 
   find(params) {
     params = params || { query: {} };
+    assert(params.user, 'params.user not provided');
+
     const srvActions = this.app.service('actions');
-    return srvActions.find({ query: {
+    const svrMetrics = this.app.service('user-metrics');
+
+    const getActions = srvActions.find({ query: {
       $select: ['rules.rewards.metric', '*']
-    }}).then(results => {
+    }});
+    
+    return getActions.then(results => {
       const data = results && results.data || results;
+      const scores = params.user.scores || [];
       const fulfillRequires = cond => { return true; }; // TODO
       const validActions = fp.reduce((arr, action) => {
         // filter by visibility requirements
@@ -38,7 +45,7 @@ class UserActionService extends Service {
           }, action.rules);
           const rewards = fp.flatten(fp.map(fp.prop('rewards'), validRules));
           action = fp.omit(['rules', 'requires', 'rate'], action);
-          action.actions = rewards;
+          action.rewards = rewards;
           return arr.concat(action);
         }
         return arr;
