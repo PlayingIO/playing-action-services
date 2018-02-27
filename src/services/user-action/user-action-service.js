@@ -4,6 +4,7 @@ import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import UserActionModel from '~/models/user-action-model';
 import defaultHooks from './user-action-hooks';
+import { fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');
 
@@ -107,10 +108,7 @@ class UserActionService extends Service {
         // filter by visibility requirements
         if (fulfillRequires(action.requires)) {
           // filter by the rule requirements
-          const activeRules = fp.filter(rule => {
-            return fp.all(fulfillRequires, rule.requires);
-          }, action.rules);
-          const rewards = fp.flatten(fp.map(fp.prop('rewards'), activeRules));
+          const rewards = fulfillActionRewards(action);
           action = fp.omit(['rules', 'requires', 'rate'], action);
           action.rewards = rewards;
           return arr.concat(action);
