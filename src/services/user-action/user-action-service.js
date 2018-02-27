@@ -102,7 +102,7 @@ class UserActionService extends Service {
 
     const svcActions = this.app.service('actions');
     // get available actions
-    const getActions = svcActions.find({
+    const getActions = () => svcActions.find({
       query: { $select: ['rules.rewards.metric', '*'] },
       paginate: false
     });
@@ -141,7 +141,7 @@ class UserActionService extends Service {
     };
 
     let activeActions = [];
-    return getActions.then(results => {
+    return getActions().then(results => {
       activeActions = fulfillActions(results && results.data || results);
       return getUserActions(activeActions);
     }).then(results => {
