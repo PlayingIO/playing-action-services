@@ -23,7 +23,7 @@ class UserActionService extends Service {
   }
 
   /**
-   * find user-actions of current user
+   * find user actions of current user
    * @param {*} params 
    */
   find(params) {
@@ -33,7 +33,7 @@ class UserActionService extends Service {
   }
 
   /**
-   * get user-actions by action id
+   * get user actions by action id
    */
   get(id, params) {
     let action = null;
@@ -48,6 +48,9 @@ class UserActionService extends Service {
     return this._first(null, null, params);
   }
 
+  /**
+   * upsert/count a user action
+   */
   create(data, params) {
     assert(data.action, 'data.action not provided.');
     assert(data.user, 'data.user not provided.');
@@ -60,6 +63,13 @@ class UserActionService extends Service {
 
     return getAction.then(action => {
       data['$inc'] = { count: 1 };
+      data.rewards = fp.flatten(fp.map(rule => {
+        return (rule.rewards || []).map(reward => {
+          reward.type = reward.metric && reward.metric.type;
+          reward.metric = reward.metric && reward.metric.id || reward.metric;
+          return reward;
+        });
+      }, action.rules));
       return super._upsert(null, data, { query: {
         action: data.action,
         user: data.user
