@@ -30,8 +30,9 @@ module.exports = function(options = {}) {
     },
     after: {
       all: [
-        hooks.presentEntity(UserActionEntity, options),
+        hooks.populate('action', { service: 'actions' }),
         hooks.populate('user', { service: 'users' }),
+        hooks.presentEntity(UserActionEntity, options),
         hooks.responder()
       ]
     }

@@ -48,6 +48,26 @@ class UserActionService extends Service {
     return this._first(null, null, params);
   }
 
+  create(data, params) {
+    assert(data.action, 'data.action not provided.');
+    assert(data.user, 'data.user not provided.');
+    delete data.count;
+
+    const srvActions = this.app.service('actions');
+    const getAction = srvActions.get(data.action, {
+      query: { $select: ['rules.rewards.metric', '*'] }
+    });
+
+    return getAction.then(action => {
+      data['$inc'] = { count: 1 };
+      return super._upsert(null, data, { query: {
+        action: data.action,
+        user: data.user
+      }});
+    });
+    
+  }
+
   /**
    * Active actions for current player
    */
