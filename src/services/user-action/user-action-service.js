@@ -4,7 +4,7 @@ import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import UserActionModel from '~/models/user-action-model';
 import defaultHooks from './user-action-hooks';
-import { fulfillActionRewards } from '../../helpers';
+import { getActionRewards, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');
 
@@ -50,7 +50,7 @@ class UserActionService extends Service {
   }
 
   /**
-   * upsert/count a user action
+   * play a user action (count and reward)
    */
   create(data, params) {
     assert(data.action, 'data.action not provided.');
@@ -64,13 +64,7 @@ class UserActionService extends Service {
 
     return getAction.then(action => {
       data['$inc'] = { count: 1 };
-      data.rewards = fp.flatten(fp.map(rule => {
-        return (rule.rewards || []).map(reward => {
-          reward.type = reward.metric && reward.metric.type;
-          reward.metric = reward.metric && reward.metric.id || reward.metric;
-          return reward;
-        });
-      }, action.rules));
+      data.rewards = getActionRewards(action);
       return super._upsert(null, data, { query: {
         action: data.action,
         user: data.user
