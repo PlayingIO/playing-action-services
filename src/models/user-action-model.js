@@ -9,7 +9,6 @@ const fields = {
   action: { type: 'ObjectId', required: true }, // action id
   name: { type: String, required: true },       // action name (for cache)
   count: { type: Number, default: 0 },          // action count
-  rewards: rules.rule.rewards,                  // rewards gotten for this action
   user: { type: 'ObjectId', required: true }    // user id
 };
 
