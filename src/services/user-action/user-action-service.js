@@ -57,18 +57,38 @@ class UserActionService extends Service {
     assert(data.user, 'data.user not provided.');
     delete data.count;
 
-    const srvActions = this.app.service('actions');
-    const getAction = srvActions.get(data.action, {
+    const svcActions = this.app.service('actions');
+    const svcUserMetrics = this.app.service('user-metrics');
+
+    const getAction = () => svcActions.get(data.action, {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
+    const createRewards = fp.reduce((arr, reward) => {
+      if (reward.metric) {
+        reward.metric = reward.metric.id || reward.metric;
+        reward.user = data.user;
+        arr.push(svcUserMetrics.create(reward));
+      }
+      return arr;
+    }, []);
 
-    return getAction.then(action => {
+    return getAction().then(action => {
       data['$inc'] = { count: 1 };
       data.rewards = getActionRewards(action);
       return super._upsert(null, data, { query: {
         action: data.action,
         user: data.user
-      }});
+      }}).then(result => {
+        // create the action rewards
+        const rewards = fulfillActionRewards(action);
+        if (rewards.length > 0) {
+          return Promise.all(createRewards(rewards)).then(results => {
+            return { action: result, rewards: fp.flatten(results) };
+          });
+        } else {
+          return { action: result, rewards: [] };
+        }
+      });
     });
     
   }
@@ -80,9 +100,9 @@ class UserActionService extends Service {
     params = params || { query: {} };
     assert(params.user, 'params.user not provided');
 
-    const srvActions = this.app.service('actions');
+    const svcActions = this.app.service('actions');
     // get available actions
-    const getActions = srvActions.find({
+    const getActions = svcActions.find({
       query: { $select: ['rules.rewards.metric', '*'] },
       paginate: false
     });

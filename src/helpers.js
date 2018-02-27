@@ -6,7 +6,7 @@ export const fulfillActionRewards = (action) => {
 };
 
 export const getActionRewards = (action) => {
-  fp.flatten(fp.map(rule => {
+  return fp.flatten(fp.map(rule => {
     return (rule.rewards || []).map(reward => {
       reward.type = reward.metric && reward.metric.type;
       reward.metric = reward.metric && reward.metric.id || reward.metric;
