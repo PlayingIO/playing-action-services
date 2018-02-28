@@ -55,6 +55,7 @@ class UserActionService extends Service {
   create(data, params) {
     assert(data.action, 'data.action not provided.');
     assert(data.user, 'data.user not provided.');
+    assert(params.user && params.user.scores, 'params.user.scores not provided');
     delete data.count;
 
     const svcActions = this.app.service('actions');
@@ -82,7 +83,7 @@ class UserActionService extends Service {
         user: data.user
       }}).then(result => {
         // create the action rewards
-        const rewards = fulfillActionRewards(action);
+        const rewards = fulfillActionRewards(action, params.user.scores);
         if (rewards.length > 0) {
           return Promise.all(createRewards(rewards)).then(results => {
             return { action: result, rewards: fp.flatten(results) };
@@ -129,7 +130,7 @@ class UserActionService extends Service {
         // filter by visibility requirements
         if (fulfillRequires(action.requires)) {
           // filter by the rule requirements
-          const rewards = fulfillActionRewards(action);
+          const rewards = fulfillActionRewards(action, params.user.scores);
           action = fp.omit(['rules', 'requires', 'rate'], action);
           action.rewards = rewards;
           return arr.concat(action);
