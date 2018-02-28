@@ -25,7 +25,6 @@ class UserActionService extends Service {
 
   /**
    * find user actions of current user
-   * @param {*} params 
    */
   find(params) {
     params = Object.assign({ query: {} }, params);
@@ -124,7 +123,6 @@ class UserActionService extends Service {
 
     // filter actions by requires
     const fulfillActions = (actions => {
-      const scores = params.user.scores || [];
       const fulfillRequires = cond => { return true; }; // TODO
       const activeActions = fp.reduce((arr, action) => {
         // filter by visibility requirements
