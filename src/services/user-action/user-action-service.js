@@ -58,6 +58,7 @@ class UserActionService extends Service {
     delete data.count;
 
     const svcActions = this.app.service('actions');
+    const svcUserRules = this.app.service('user-rules');
     const svcUserMetrics = this.app.service('user-metrics');
 
     const getAction = () => svcActions.get(data.action, {
@@ -71,6 +72,7 @@ class UserActionService extends Service {
       }
       return arr;
     }, []);
+    const processRules = () => svcUserRules.create({ user: data.user }, { user: params.user });
 
     return getAction().then(action => {
       data['$inc'] = { count: 1 };
@@ -88,6 +90,11 @@ class UserActionService extends Service {
         } else {
           return { action: result, rewards: [] };
         }
+      }).then(resutls => {
+        processRules().then((events) => {
+          debug('process rules', events && events.length);
+        });
+        return resutls;
       });
     });
     
