@@ -4,7 +4,7 @@ import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import UserActionModel from '~/models/user-action-model';
 import defaultHooks from './user-action-hooks';
-import { getActionRewards, fulfillActionRewards } from '../../helpers';
+import { getActionRewards, fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');
 
@@ -54,7 +54,7 @@ class UserActionService extends Service {
   create(data, params) {
     assert(data.action, 'data.action not provided.');
     assert(data.user, 'data.user not provided.');
-    assert(params.user && params.user.scores, 'params.user.scores not provided');
+    assert(params.user, 'params.user not provided');
     delete data.count;
 
     const svcActions = this.app.service('actions');
@@ -82,7 +82,7 @@ class UserActionService extends Service {
         user: data.user
       }}).then(result => {
         // create the action rewards
-        const rewards = fulfillActionRewards(action, params.user.scores);
+        const rewards = fulfillActionRewards(action, params.user);
         if (rewards.length > 0) {
           return Promise.all(createRewards(rewards)).then(results => {
             return { action: result, rewards: fp.flatten(results) };
@@ -123,12 +123,11 @@ class UserActionService extends Service {
 
     // filter actions by requires
     const fulfillActions = (actions => {
-      const fulfillRequires = cond => { return true; }; // TODO
       const activeActions = fp.reduce((arr, action) => {
         // filter by visibility requirements
-        if (fulfillRequires(action.requires)) {
+        if (fulfillActionRequires(action, params.user)) {
           // filter by the rule requirements
-          const rewards = fulfillActionRewards(action, params.user.scores);
+          const rewards = fulfillActionRewards(action, params.user);
           action = fp.omit(['rules', 'requires', 'rate'], action);
           action.rewards = rewards;
           return arr.concat(action);

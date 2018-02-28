@@ -1,8 +1,12 @@
 import fp from 'mostly-func';
 import { helpers as rules } from 'playing-rule-services';
 
-export const fulfillActionRewards = (action, scores) => {
-  return rules.fulfillCustomRewards(action.rules, action.variables, scores);
+export const fulfillActionRequires = (action, user) => {
+  return rules.fulfillRequires(action.rules, action.variables, user);
+};
+
+export const fulfillActionRewards = (action, user) => {
+  return rules.fulfillCustomRewards(action.rules, action.variables, user);
 };
 
 export const getActionRewards = (action) => {
