@@ -1,9 +1,12 @@
-import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 
 import { rate } from './rate-schema';
+
+const options = {
+  timestamps: true
+};
 
 /*
  * Actions are a way of capturing player events/actions.
@@ -25,8 +28,7 @@ const fields = {
 
 export default function model (app, name) {
   const mongoose = app.get('mongoose');
-  const schema = new mongoose.Schema(fields);
-  schema.plugin(timestamps);
+  const schema = new mongoose.Schema(fields, options);
   schema.plugin(plugins.softDelete);
   return mongoose.model(name, schema);
 }
