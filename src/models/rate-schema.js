@@ -12,4 +12,4 @@ const rate = {
   ]},
 };
 
-export default { rate }
+export default { rate };
