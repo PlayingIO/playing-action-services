@@ -21,11 +21,13 @@ module.exports = function(options = {}) {
       ],
       update: [
         iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' }))
+          associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
         iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' }))
+          associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
     after: {
