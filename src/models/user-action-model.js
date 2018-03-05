@@ -12,7 +12,7 @@ const fields = {
   action: { type: 'ObjectId', required: true }, // action id
   name: { type: String, required: true },       // action name (for cache)
   count: { type: Number },                      // action count (no default for upsert with $inc)
-  rewards: rules.rule.rewards,                  // rewards for this action (for cache)
+  rewards: rules.rewards.schema,                // rewards for this action (for cache)
   user: { type: 'ObjectId', required: true }    // user id
 };
 

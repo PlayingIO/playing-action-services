@@ -17,12 +17,12 @@ const fields = {
   image: contents.blob.schema,               // image which represents the action
   chance: { type: Number, default: 100 },    // probability percentage that the player gets the rewards on completing the action
   rate: rate,                                // rate limiting an action
-  requires: rules.rule.requires,
+  requires: rules.requires.schema,
   rules: [{                                  // rules to be evaluated to give rewards to the player
-    rewards: rules.rule.rewards,             // metrics that a player gets when he finishes this action
-    requires: rules.rule.requires            // conditions which are checked to see if the player is suitable to get this reward
+    rewards: rules.rewards.schema,           // metrics that a player gets when he finishes this action
+    requires: rules.requires.schema          // conditions which are checked to see if the player is suitable to get this reward
   }],
-  variables: rules.rule.variables,           // variables available within this action
+  variables: rules.variables.schema,         // variables available within this action
   tags: [{ type: String }],                  // the tags of the rule
 };
 
@@ -34,4 +34,3 @@ export default function model (app, name) {
 }
 
 model.schema = fields;
-model.rate = rate;
