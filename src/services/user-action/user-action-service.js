@@ -1,6 +1,7 @@
 import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
+import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import UserActionModel from '~/models/user-action-model';
 import defaultHooks from './user-action-hooks';
@@ -66,7 +67,7 @@ class UserActionService extends Service {
     });
     const createRewards = fp.reduce((arr, reward) => {
       if (reward.metric) {
-        reward.metric = reward.metric.id || reward.metric;
+        reward.metric = helper.getId(reward.metric.id);
         reward.user = data.user;
         arr.push(svcUserMetrics.create(reward));
       }

@@ -1,4 +1,5 @@
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as rules } from 'playing-rule-services';
 
 export const fulfillActionRequires = (action, user) => {
@@ -13,7 +14,7 @@ export const getActionRewards = (action) => {
   return fp.flatten(fp.map(rule => {
     return (rule.rewards || []).map(reward => {
       reward.type = reward.metric && reward.metric.type;
-      reward.metric = reward.metric && reward.metric.id || reward.metric;
+      reward.metric = reward.metric && helpers.getId(reward.metric);
       return reward;
     });
   }, action.rules));
