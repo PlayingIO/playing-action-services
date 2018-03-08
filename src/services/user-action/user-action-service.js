@@ -1,7 +1,6 @@
 import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
-import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import UserActionModel from '~/models/user-action-model';
 import defaultHooks from './user-action-hooks';
@@ -53,21 +52,21 @@ class UserActionService extends Service {
    * play a user action (count and reward)
    */
   create(data, params) {
-    assert(data.action, 'data.action not provided.');
-    assert(data.user, 'data.user not provided.');
-    assert(params.user, 'params.user not provided');
+    assert(data.action, 'data.action is not provided.');
+    assert(data.user, 'data.user is not provided.');
+    assert(params.user, 'params.user is not provided');
     delete data.count;
 
     const svcActions = this.app.service('actions');
     const svcUserRules = this.app.service('user-rules');
     const svcUserMetrics = this.app.service('user-metrics');
 
-    const getAction = () => svcActions.get(data.action, {
+    const getAction = (id) => svcActions.get(id, {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
     const createRewards = fp.reduce((arr, reward) => {
       if (reward.metric) {
-        reward.metric = helper.getId(reward.metric.id);
+        reward.metric = helpers.getId(reward.metric.id);
         reward.user = data.user;
         arr.push(svcUserMetrics.create(reward));
       }
@@ -75,7 +74,8 @@ class UserActionService extends Service {
     }, []);
     const processRules = () => svcUserRules.create({ user: data.user }, { user: params.user });
 
-    return getAction().then(action => {
+    return getAction(data.action).then(action => {
+      assert(action, 'data.action is not exists.');
       data['$inc'] = { count: 1 };
       data.rewards = getActionRewards(action);
       return super._upsert(null, data, { query: {
