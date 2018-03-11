@@ -91,11 +91,11 @@ class UserActionService extends Service {
         } else {
           return { action: result, rewards: [] };
         }
-      }).then(resutls => {
+      }).then(results => {
         processRules().then((events) => {
           debug('process rules', events && events.length);
         });
-        return resutls;
+        return results;
       });
     });
     
