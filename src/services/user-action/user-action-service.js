@@ -105,7 +105,7 @@ class UserActionService extends Service {
    * Active actions for current player
    */
   _active(id, data, params) {
-    params = params || { query: {} };
+    params = fp.assign({ query: {} }, params);
     assert(params.user, 'params.user not provided');
 
     const svcActions = this.app.service('actions');
