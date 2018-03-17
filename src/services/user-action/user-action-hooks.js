@@ -1,6 +1,8 @@
 import { iff, isProvider } from 'feathers-hooks-common';
 import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
+import { cache } from 'mostly-feathers-cache';
+
 import UserActionEntity from '~/entities/action-entity';
 
 module.exports = function(options = {}) {
@@ -9,7 +11,8 @@ module.exports = function(options = {}) {
       all: [
         hooks.authenticate('jwt', options.auth, 'scores,actions'),
         iff(isProvider('external'),
-          queryWithCurrentUser({ idField: 'id', as: 'user' }))
+          queryWithCurrentUser({ idField: 'id', as: 'user' })),
+        cache(options.cache)
       ],
       get: [],
       find: [],
@@ -32,6 +35,7 @@ module.exports = function(options = {}) {
       all: [
         hooks.populate('action', { service: 'actions' }),
         hooks.populate('user', { service: 'users' }),
+        cache(options.cache),
         hooks.presentEntity(UserActionEntity, options),
         hooks.responder()
       ]
