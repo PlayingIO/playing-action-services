@@ -2,8 +2,9 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
-import UserActionModel from '~/models/user-action-model';
-import defaultHooks from './user-action-hooks';
+
+import UserActionModel from '~/models/user-action.model';
+import defaultHooks from './user-action.hooks';
 import { getActionRewards, fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');

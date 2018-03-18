@@ -1,7 +1,7 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 
-import ActionEntity from '~/entities/action-entity';
+import ActionEntity from '~/entities/action.entity';
 
 module.exports = function(options = {}) {
   return {
