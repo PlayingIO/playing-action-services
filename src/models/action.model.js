@@ -2,7 +2,7 @@ import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 
-import { rate } from './rate-schema';
+import { rate } from './rate.schema';
 
 const options = {
   timestamps: true

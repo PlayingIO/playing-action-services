@@ -1,11 +1,11 @@
 import glob from 'glob';
 import path from 'path';
-import { rate } from './rate-schema';
+import { rate } from './rate.schema';
 
 // load all models
-let modelFiles = glob.sync(path.join(__dirname, './*-model.js'));
+let modelFiles = glob.sync(path.join(__dirname, './*.model.js'));
 modelFiles.forEach(file => {
-  let name = path.basename(file, '-model.js');
+  let name = path.basename(file, '.model.js');
   module.exports[name] = require(file);
 });
 
