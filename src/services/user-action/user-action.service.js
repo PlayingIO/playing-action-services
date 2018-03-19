@@ -27,7 +27,7 @@ class UserActionService extends Service {
   /**
    * find user actions of current user
    */
-  find(params) {
+  async find(params) {
     params = Object.assign({ query: {} }, params);
     assert(params.query.user, 'params.query.user not provided');
     return super.find(params);
@@ -36,7 +36,7 @@ class UserActionService extends Service {
   /**
    * get user actions by action id
    */
-  get(id, params) {
+  async get(id, params) {
     let action = null;
     [id, action] = this._idOrAction(id, params);
     if (action) {
@@ -52,7 +52,7 @@ class UserActionService extends Service {
   /**
    * play a user action (count and reward)
    */
-  create(data, params) {
+  async create(data, params) {
     assert(data.action, 'data.action is not provided.');
     assert(data.user, 'data.user is not provided.');
     assert(params.user, 'params.user is not provided');
@@ -62,61 +62,67 @@ class UserActionService extends Service {
     const svcUserRules = this.app.service('user-rules');
     const svcUserMetrics = this.app.service('user-metrics');
 
-    const getAction = (id) => svcActions.get(id, {
+    const getAction = async (id) => svcActions.get(id, {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
-    const createRewards = fp.reduce((arr, reward) => {
+
+    const saveUserAction = async (data) => super._upsert(null, data, { query: {
+      action: data.action,
+      user: data.user
+    }});
+
+    const createUserMetrics = fp.reduce((arr, reward) => {
       if (reward.metric) {
-        reward.metric = helpers.getId(reward.metric.id);
+        reward.metric = helpers.getId(reward.metric);
         reward.user = data.user;
         arr.push(svcUserMetrics.create(reward));
       }
       return arr;
     }, []);
-    const processRules = () => svcUserRules.create({ user: data.user }, { user: params.user });
 
-    return getAction(data.action).then(action => {
-      assert(action, 'data.action is not exists.');
-      data['$inc'] = { count: 1 };
-      data.rewards = flattenActionRewards(action);
-      return super._upsert(null, data, { query: {
-        action: data.action,
-        user: data.user
-      }}).then(result => {
-        // create the action rewards
-        const rewards = fulfillActionRewards(action, params.user);
-        if (rewards.length > 0) {
-          return Promise.all(createRewards(rewards)).then(results => {
-            return { action: result, rewards: fp.flatten(results) };
-          });
-        } else {
-          return { action: result, rewards: [] };
-        }
-      }).then(results => {
-        processRules().then((events) => {
-          debug('process rules', events && events.length);
-        });
-        return results;
-      });
-    });
-    
+    const action = await getAction(data.action)
+    assert(action, 'data.action is not exists.');
+
+    // TODO check the action requires and rate
+    data['$inc'] = { count: 1 };
+    data.rewards = flattenActionRewards(action);
+
+    // save user's action
+    const userAction = await saveUserAction(data);
+
+    // create the action rewards
+    const rewards = fulfillActionRewards(action, params.user);
+    let results = { action: userAction };
+    if (rewards.length > 0) {
+      const metrics = await Promise.all(createUserMetrics(rewards));
+      results.rewards = fp.flatten(metrics);
+    } else {
+      results.rewards = [];
+    }
+
+    // process the rules (TODO notify as an event)
+    const events = await svcUserRules.create({ user: data.user }, { user: params.user });
+    debug('process rules', events && events.length);
+
+    return results;
   }
 
   /**
    * Active actions for current player
    */
-  _active(id, data, params) {
+  async _active(id, data, params) {
     params = fp.assign({ query: {} }, params);
     assert(params.user, 'params.user not provided');
 
     const svcActions = this.app.service('actions');
+
     // get available actions
-    const getActions = () => svcActions.find({
+    const getAllActions = async () => svcActions.find({
       query: { $select: ['rules.rewards.metric', '*'] },
       paginate: false
     });
     // get user-actions of provided actions
-    const getUserActions = (actions) => {
+    const getUserActions = async (actions) => {
       return super.find({
         query: { action: { $in: fp.map(fp.prop('id'), actions) } },
         paginate: false
@@ -147,13 +153,10 @@ class UserActionService extends Service {
       }, actions);
     };
 
-    let activeActions = [];
-    return getActions().then(results => {
-      activeActions = fulfillActions(results && results.data || results);
-      return getUserActions(activeActions);
-    }).then(results => {
-      return assocActions(activeActions, results && results.data || results);
-    });
+    const allActions = await getAllActions();
+    const activeActions = fulfillActions(allActions);
+    const userActions = await getUserActions(activeActions);
+    return assocActions(activeActions, userActions);
   }
 }
 
