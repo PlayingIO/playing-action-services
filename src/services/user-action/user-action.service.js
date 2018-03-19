@@ -5,7 +5,7 @@ import fp from 'mostly-func';
 
 import UserActionModel from '~/models/user-action.model';
 import defaultHooks from './user-action.hooks';
-import { getActionRewards, fulfillActionRequires, fulfillActionRewards } from '../../helpers';
+import { flattenActionRewards, fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');
 
@@ -78,7 +78,7 @@ class UserActionService extends Service {
     return getAction(data.action).then(action => {
       assert(action, 'data.action is not exists.');
       data['$inc'] = { count: 1 };
-      data.rewards = getActionRewards(action);
+      data.rewards = flattenActionRewards(action);
       return super._upsert(null, data, { query: {
         action: data.action,
         user: data.user
