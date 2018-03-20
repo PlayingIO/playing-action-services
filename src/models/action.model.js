@@ -2,8 +2,6 @@ import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 
-import { rate } from './rate.schema';
-
 const options = {
   timestamps: true
 };
@@ -16,7 +14,7 @@ const fields = {
   description: { type: String },             // brief description of the action
   image: contents.blob.schema,               // image which represents the action
   chance: { type: Number, default: 100 },    // probability percentage that the player gets the rewards on completing the action
-  rate: rate,                                // rate limiting an action
+  rate: rules.rate.schema,                   // rate limiting an action
   requires: rules.requires.schema,
   rules: [{                                  // rules to be evaluated to give rewards to the player
     rewards: rules.rewards.schema,           // metrics that a player gets when he finishes this action
