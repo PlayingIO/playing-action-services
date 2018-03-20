@@ -2,6 +2,8 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { helpers as metrics } from 'playing-metric-services';
+import { helpers as rules } from 'playing-rule-services';
 
 import UserActionModel from '~/models/user-action.model';
 import defaultHooks from './user-action.hooks';
@@ -59,26 +61,14 @@ class UserActionService extends Service {
     delete data.count;
 
     const svcActions = this.app.service('actions');
-    const svcUserRules = this.app.service('user-rules');
-    const svcUserMetrics = this.app.service('user-metrics');
 
     const getAction = async (id) => svcActions.get(id, {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
 
-    const saveUserAction = async (data) => super._upsert(null, data, { query: {
-      action: data.action,
-      user: data.user
-    }});
-
-    const createUserMetrics = fp.reduce((arr, reward) => {
-      if (reward.metric) {
-        reward.metric = helpers.getId(reward.metric);
-        reward.user = data.user;
-        arr.push(svcUserMetrics.create(reward));
-      }
-      return arr;
-    }, []);
+    const saveUserAction = async (data) => super._upsert(null, data, {
+      query: { action: data.action, user: data.user }
+    });
 
     const action = await getAction(data.action)
     assert(action, 'data.action is not exists.');
@@ -94,14 +84,13 @@ class UserActionService extends Service {
     const rewards = fulfillActionRewards(action, params.user);
     let results = { action: userAction };
     if (rewards.length > 0) {
-      const metrics = await Promise.all(createUserMetrics(rewards));
-      results.rewards = fp.flatten(metrics);
+      results.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards);
     } else {
       results.rewards = [];
     }
 
     // process the rules (TODO notify as an event)
-    const events = await svcUserRules.create({ user: data.user }, { user: params.user });
+    const events = await rules.processUserRules(this.app)(params.user);
     debug('process rules', events && events.length);
 
     return results;
