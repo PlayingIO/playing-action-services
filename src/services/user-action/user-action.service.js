@@ -58,6 +58,7 @@ class UserActionService extends Service {
     assert(data.action, 'data.action is not provided.');
     assert(data.user, 'data.user is not provided.');
     assert(params.user, 'params.user is not provided');
+    data.variables = data.variables || {};
     delete data.count;
 
     const svcActions = this.app.service('actions');
@@ -84,7 +85,7 @@ class UserActionService extends Service {
     const rewards = fulfillActionRewards(action, params.user);
     let results = { action: userAction };
     if (rewards.length > 0) {
-      results.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards);
+      results.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards, data.variables);
     } else {
       results.rewards = [];
     }
