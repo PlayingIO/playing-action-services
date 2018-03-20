@@ -7,7 +7,7 @@ import { helpers as rules } from 'playing-rule-services';
 
 import UserActionModel from '~/models/user-action.model';
 import defaultHooks from './user-action.hooks';
-import { flattenActionRewards, fulfillActionRequires, fulfillActionRewards } from '../../helpers';
+import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');
 
@@ -71,12 +71,11 @@ class UserActionService extends Service {
       query: { action: data.action, user: data.user }
     });
 
-    const action = await getAction(data.action)
+    const action = await getAction(data.action);
     assert(action, 'data.action is not exists.');
 
     // TODO check the action requires and rate
     data['$inc'] = { count: 1 };
-    data.rewards = flattenActionRewards(action);
 
     // save user's action
     const userAction = await saveUserAction(data);
