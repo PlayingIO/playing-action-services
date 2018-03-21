@@ -1,4 +1,5 @@
 import assert from 'assert';
+import dateFn from 'date-fns';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
@@ -77,37 +78,53 @@ class UserActionService extends Service {
     // save user's action
     const userAction = await saveUserAction(data);
 
-    let countLimit = {};
+    let actionCount = { count: 1 };
 
     // rate limiting the action
     if (action.rate && action.rate.frequency) {
       const now = new Date();
-      let lastRequest = now, firstRequest = now;
-      let expiredAt = rules.addInterval(now, action.rate.interval);
-
-      if (userAction.limit) {
-        // get action request time
-        if (userAction.limit.expiredAt) expiredAt = userAction.limit.expiredAt;
-        if (userAction.limit.lastRequest) lastRequest = userAction.limit.lastRequest;
-        if (userAction.limit.firstRequest) firstRequest = userAction.limit.firstRequest;
-
-        if (expiredAt.getTime() >= now.getTime() && userAction.limit.count <= action.rate.frequency) {
-          countLimit['$inc'] = { count: 1, 'limit.count': 1 };
-          lastRequest = now;
-        } else {
-          countLimit['$inc'] = { 'limit.count': 0 };
-          expiredAt = rules.addInterval(now, action.rate.interval);
-          lastRequest = now, firstRequest = now;
+      let { count, lastRequest, firstRequest, expiredAt } = userAction.limit || {};
+      if (expiredAt && expiredAt.getTime() >= now.getTime()) {
+        // replenish the count for leady bucket
+        if (action.rate.window === 'leaky') {
+          count += Math.floor(rules.differenceInterval(lastRequest, now) / action.rate.frequency * count);
+          count = Math.min(count, action.rate.count);
         }
       }
 
-      countLimit['$set'] = {
+      // reset the limit
+      if (!expiredAt || expiredAt.getTime() < now.getTime()) {
+        count = action.rate.count;
+        switch (action.rate.window) {
+          case 'fixed':
+            firstRequest = rules.startOfInterval(now, action.rate.frequency, action.rate.interval);
+            break;
+          case 'rolling':
+            firstRequest = now;
+            break;
+          case 'leaky':
+            firstRequest = now;
+            break;
+        }
+        expiredAt = rules.addInterval(firstRequest, action.rate.frequency, action.rate.interval);
+      }
+
+      if (expiredAt.getTime() >= now.getTime() && count > 0) {
+        count = count - 1;
+        lastRequest = now;
+      } else {
+        throw new Error('Rate limit exceed, the action can only be triggered ' +
+          `${action.rate.count} times every ${action.rate.frequency} ${action.rate.interval}s`);
+      }
+
+      actionCount['$set'] = {
+        'limit.count': count,
         'limit.expiredAt': expiredAt,
         'limit.firstRequest': firstRequest,
         'limit.lastRequest': lastRequest
       };
     }
-    await super.patch(userAction.id, countLimit);
+    await super.patch(userAction.id, actionCount);
   
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
