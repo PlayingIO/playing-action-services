@@ -78,51 +78,11 @@ class UserActionService extends Service {
     // save user's action
     const userAction = await saveUserAction(data);
 
-    let actionCount = { count: 1 };
+    let actionCount = { $inc: { count: 1 } };
 
     // rate limiting the action
     if (action.rate && action.rate.frequency) {
-      const now = new Date();
-      let { count, lastRequest, firstRequest, expiredAt } = userAction.limit || {};
-      if (expiredAt && expiredAt.getTime() >= now.getTime()) {
-        // replenish the count for leady bucket
-        if (action.rate.window === 'leaky') {
-          count += Math.floor(rules.differenceInterval(lastRequest, now) / action.rate.frequency * count);
-          count = Math.min(count, action.rate.count);
-        }
-      }
-
-      // reset the limit
-      if (!expiredAt || expiredAt.getTime() < now.getTime()) {
-        count = action.rate.count;
-        switch (action.rate.window) {
-          case 'fixed':
-            firstRequest = rules.startOfInterval(now, action.rate.frequency, action.rate.interval);
-            break;
-          case 'rolling':
-            firstRequest = now;
-            break;
-          case 'leaky':
-            firstRequest = now;
-            break;
-        }
-        expiredAt = rules.addInterval(firstRequest, action.rate.frequency, action.rate.interval);
-      }
-
-      if (expiredAt.getTime() >= now.getTime() && count > 0) {
-        count = count - 1;
-        lastRequest = now;
-      } else {
-        throw new Error('Rate limit exceed, the action can only be triggered ' +
-          `${action.rate.count} times every ${action.rate.frequency} ${action.rate.interval}s`);
-      }
-
-      actionCount['$set'] = {
-        'limit.count': count,
-        'limit.expiredAt': expiredAt,
-        'limit.firstRequest': firstRequest,
-        'limit.lastRequest': lastRequest
-      };
+      actionCount.limit = rules.checkRateLimit(action.rate, userAction.limit || {});
     }
     await super.patch(userAction.id, actionCount);
   
