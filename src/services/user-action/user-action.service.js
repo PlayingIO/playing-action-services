@@ -74,12 +74,41 @@ class UserActionService extends Service {
     const action = await getAction(data.action);
     assert(action, 'data.action is not exists.');
 
-    // TODO check the action requires and rate
-    data['$inc'] = { count: 1 };
-
     // save user's action
     const userAction = await saveUserAction(data);
 
+    let countLimit = {};
+
+    // rate limiting the action
+    if (action.rate && action.rate.frequency) {
+      const now = new Date();
+      let lastRequest = now, firstRequest = now;
+      let expiredAt = rules.addInterval(now, action.rate.interval);
+
+      if (userAction.limit) {
+        // get action request time
+        if (userAction.limit.expiredAt) expiredAt = userAction.limit.expiredAt;
+        if (userAction.limit.lastRequest) lastRequest = userAction.limit.lastRequest;
+        if (userAction.limit.firstRequest) firstRequest = userAction.limit.firstRequest;
+
+        if (expiredAt.getTime() >= now.getTime() && userAction.limit.count <= action.rate.frequency) {
+          countLimit['$inc'] = { count: 1, 'limit.count': 1 };
+          lastRequest = now;
+        } else {
+          countLimit['$inc'] = { 'limit.count': 0 };
+          expiredAt = rules.addInterval(now, action.rate.interval);
+          lastRequest = now, firstRequest = now;
+        }
+      }
+
+      countLimit['$set'] = {
+        'limit.expiredAt': expiredAt,
+        'limit.firstRequest': firstRequest,
+        'limit.lastRequest': lastRequest
+      };
+    }
+    await super.patch(userAction.id, countLimit);
+  
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
     let results = { action: userAction };

@@ -12,6 +12,7 @@ const fields = {
   action: { type: 'ObjectId', required: true }, // action id
   name: { type: String, required: true },       // action name (for cache)
   count: { type: Number },                      // action count (no default for upsert with $inc)
+  limit: { type: rules.limit.schema },          // rate limiting data
   user: { type: 'ObjectId', required: true }    // user id
 };
 
