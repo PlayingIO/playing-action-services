@@ -14,13 +14,13 @@ const fields = {
   description: { type: String },             // brief description of the action
   image: contents.blob.schema,               // image which represents the action
   chance: { type: Number, default: 100 },    // probability percentage that the player gets the rewards on completing the action
-  rate: rules.rate.schema,                   // rate limiting an action
+  rate: rules.rate.schema,                   // rate limiting of the action
   requires: rules.requires.schema,
   rules: [{                                  // rules to be evaluated to give rewards to the player
-    rewards: rules.rewards.schema,           // metrics that a player gets when he finishes this action
+    rewards: rules.rewards.schema,           // metrics that a player gets when he finishes the action
     requires: rules.requires.schema          // conditions which are checked to see if the player is suitable to get this reward
   }],
-  variables: rules.variables.schema,         // variables available within this action
+  variables: rules.variables.schema,         // variables available within the action
   tags: [{ type: String }],                  // the tags of the rule
 };
 

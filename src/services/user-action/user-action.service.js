@@ -16,12 +16,12 @@ const defaultOptions = {
 };
 
 class UserActionService extends Service {
-  constructor(options) {
+  constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);
   }
 
-  setup(app) {
+  setup (app) {
     super.setup(app);
     this.hooks(defaultHooks(this.options));
   }
@@ -29,7 +29,7 @@ class UserActionService extends Service {
   /**
    * find user actions of current user
    */
-  async find(params) {
+  async find (params) {
     params = Object.assign({ query: {} }, params);
     assert(params.query.user, 'params.query.user not provided');
     return super.find(params);
@@ -38,7 +38,7 @@ class UserActionService extends Service {
   /**
    * get user actions by action id
    */
-  async get(id, params) {
+  async get (id, params) {
     let action = null;
     [id, action] = this._idOrAction(id, params);
     if (action) {
@@ -54,7 +54,7 @@ class UserActionService extends Service {
   /**
    * play a user action (count and reward)
    */
-  async create(data, params) {
+  async create (data, params) {
     assert(data.action, 'data.action is not provided.');
     assert(data.user, 'data.user is not provided.');
     assert(params.user, 'params.user is not provided');
@@ -99,7 +99,7 @@ class UserActionService extends Service {
   /**
    * Active actions for current player
    */
-  async _active(id, data, params) {
+  async _active (id, data, params) {
     params = fp.assign({ query: {} }, params);
     assert(params.user, 'params.user not provided');
 
@@ -149,7 +149,7 @@ class UserActionService extends Service {
   }
 }
 
-export default function init(app, options, hooks) {
+export default function init (app, options, hooks) {
   options = Object.assign({ ModelName: 'user-action' }, options);
   return createService(app, UserActionService, UserActionModel, options);
 }
