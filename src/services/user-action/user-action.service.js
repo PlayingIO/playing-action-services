@@ -78,13 +78,21 @@ class UserActionService extends Service {
     // save user's action
     const userAction = await saveUserAction(data);
 
-    let count = { $inc: { count: 1 } };
+    let actionLimit = { $inc: { count: 1 } };
 
     // rate limiting the action
     if (action.rate && action.rate.frequency) {
-      count.limit = rules.checkRateLimit(action.rate, userAction.limit || {});
+      let { count, firstRequest, lastRequest, expiredAt } = rules.checkRateLimit(action.rate, userAction.limit || {});
+      actionLimit = {
+        $inc: { count: 1, 'limit.count': count },
+        $set: {
+          'limit.firstRequest': firstRequest,
+          'limit.lastRequest': lastRequest,
+          'limit.expiredAt': expiredAt
+        }
+      };
     }
-    await super.patch(userAction.id, count);
+    await super.patch(userAction.id, actionLimit);
   
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
