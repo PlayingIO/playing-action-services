@@ -1,5 +1,4 @@
 import assert from 'assert';
-import dateFn from 'date-fns';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
@@ -64,11 +63,12 @@ class UserActionService extends Service {
 
     const svcActions = this.app.service('actions');
 
-    const getAction = async (id) => svcActions.get(id, {
+    // get action with rewards to fulfill it
+    const getAction = (id) => svcActions.get(id, {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
-
-    const saveUserAction = async (data) => super._upsert(null, data, {
+    // upsert a user action
+    const saveUserAction = (data) => super._upsert(null, data, {
       query: { action: data.action, user: data.user }
     });
 
@@ -78,13 +78,13 @@ class UserActionService extends Service {
     // save user's action
     const userAction = await saveUserAction(data);
 
-    let actionCount = { $inc: { count: 1 } };
+    let count = { $inc: { count: 1 } };
 
     // rate limiting the action
     if (action.rate && action.rate.frequency) {
-      actionCount.limit = rules.checkRateLimit(action.rate, userAction.limit || {});
+      count.limit = rules.checkRateLimit(action.rate, userAction.limit || {});
     }
-    await super.patch(userAction.id, actionCount);
+    await super.patch(userAction.id, count);
   
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
@@ -141,7 +141,7 @@ class UserActionService extends Service {
     });
 
     // assoc count from user-actions to active actions
-    const assocActions = (actions, userActions) => {
+    const assocActionsCount = (actions, userActions) => {
       return fp.map(action => {
         const userAction = fp.find(fp.propEq('action', action.id), userActions);
         return fp.assoc('count', userAction && userAction.count || 0, action);
@@ -151,7 +151,7 @@ class UserActionService extends Service {
     const allActions = await getAllActions();
     const activeActions = fulfillActions(allActions);
     const userActions = await getUserActions(activeActions);
-    return assocActions(activeActions, userActions);
+    return assocActionsCount(activeActions, userActions);
   }
 }
 
