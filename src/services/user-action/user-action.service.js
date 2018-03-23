@@ -6,6 +6,7 @@ import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
 
 import UserActionModel from '~/models/user-action.model';
+import defaultEvents from './user-action.events';
 import defaultHooks from './user-action.hooks';
 import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
@@ -24,6 +25,7 @@ class UserActionService extends Service {
   setup (app) {
     super.setup(app);
     this.hooks(defaultHooks(this.options));
+    defaultEvents(app, this.options);
   }
 
   /**
@@ -76,7 +78,7 @@ class UserActionService extends Service {
     assert(action, 'data.action is not exists.');
 
     // save user's action
-    const userAction = await saveUserAction(data);
+    let userAction = await saveUserAction(data);
 
     let actionLimit = { $inc: { count: 1 } };
 
@@ -92,22 +94,21 @@ class UserActionService extends Service {
         }
       };
     }
-    await super.patch(userAction.id, actionLimit);
+    userAction = await super.patch(userAction.id, actionLimit);
   
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
-    let results = { action: userAction };
     if (rewards.length > 0) {
-      results.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards, data.variables);
+      userAction.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards, data.variables);
     } else {
-      results.rewards = [];
+      userAction.rewards = [];
     }
 
     // process the rules (TODO notify as an event)
     const events = await rules.processUserRules(this.app)(params.user);
     debug('process rules', events && events.length);
 
-    return results;
+    return userAction;
   }
 
   /**

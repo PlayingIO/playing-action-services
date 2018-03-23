@@ -38,7 +38,10 @@ export default function (options = {}) {
         cache(options.cache),
         hooks.presentEntity(UserActionEntity, options),
         hooks.responder()
+      ],
+      create: [
+        hooks.publishEvent('action.play', { prefix: 'playing' })
       ]
     }
   };
-};
+}
