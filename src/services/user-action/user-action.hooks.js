@@ -5,7 +5,7 @@ import { cache } from 'mostly-feathers-cache';
 
 import UserActionEntity from '~/entities/action.entity';
 
-module.exports = function (options = {}) {
+export default function (options = {}) {
   return {
     before: {
       all: [
