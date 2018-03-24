@@ -4,10 +4,6 @@ import { helpers as feeds } from 'playing-feed-services';
 const debug = makeDebug('playing:action-services:action:events');
 
 const createActivity = async function (app, userAction, verb, message) {
-  const svcFeeds = app.service('feeds');
-  const svcNotification = app.service('notifications');
-  const svcActivities = app.service('activities');
-
   const activity = {
     actor: `user:${userAction.user}`,
     verb: verb,
