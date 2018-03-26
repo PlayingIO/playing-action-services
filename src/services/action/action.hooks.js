@@ -21,7 +21,7 @@ export default function (options = {}) {
       all: [
         hooks.populate('rules.rewards.metric', { service: 'metrics' }),
         cache(options.cache),
-        hooks.presentEntity(ActionEntity, options),
+        hooks.presentEntity(ActionEntity, options.entities),
         hooks.responder()
       ]
     }

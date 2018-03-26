@@ -36,7 +36,7 @@ export default function (options = {}) {
         hooks.populate('action', { service: 'actions' }),
         hooks.populate('user', { service: 'users' }),
         cache(options.cache),
-        hooks.presentEntity(UserActionEntity, options),
+        hooks.presentEntity(UserActionEntity, options.entities),
         hooks.responder()
       ],
       create: [
