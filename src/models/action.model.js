@@ -6,7 +6,7 @@ const options = {
   timestamps: true
 };
 
-/*
+/**
  * Actions are a way of capturing player events/actions.
  */
 const fields = {

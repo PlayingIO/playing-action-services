@@ -5,7 +5,7 @@ const options = {
   timestamps: true
 };
 
-/*
+/**
  * User actions
  */
 const fields = {
