@@ -23,12 +23,12 @@ export default function (options = {}) {
       update: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
+        hooks.discardFields('createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
+        hooks.discardFields('createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
     after: {
