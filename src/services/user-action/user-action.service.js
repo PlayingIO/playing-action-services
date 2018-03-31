@@ -16,7 +16,7 @@ const defaultOptions = {
   name: 'user-actions'
 };
 
-class UserActionService extends Service {
+export class UserActionService extends Service {
   constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);

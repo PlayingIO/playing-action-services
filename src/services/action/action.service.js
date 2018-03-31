@@ -12,7 +12,7 @@ const defaultOptions = {
   name: 'actions'
 };
 
-class ActionService extends Service {
+export class ActionService extends Service {
   constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);
