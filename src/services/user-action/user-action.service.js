@@ -5,7 +5,7 @@ import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
 
-import UserActionModel from '~/models/user-action.model';
+import UserActionModel from '../../models/user-action.model';
 import defaultEvents from './user-action.events';
 import defaultHooks from './user-action.hooks';
 import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
