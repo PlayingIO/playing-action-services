@@ -6,8 +6,8 @@ import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
 
 import UserActionModel from '../../models/user-action.model';
-import defaultEvents from './user-action.events';
 import defaultHooks from './user-action.hooks';
+import defaultEvents from './user-action.events';
 import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:user-actions-services:user-actions');

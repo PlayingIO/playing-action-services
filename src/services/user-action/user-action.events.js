@@ -1,7 +1,3 @@
-import makeDebug from 'debug';
-
-const debug = makeDebug('playing:action-services:action:events');
-
 const createActivity = async function (app, userAction, verb, message) {
   const svcFeeds = app.service('feeds');
 
