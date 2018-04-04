@@ -40,7 +40,7 @@ export default function (options = {}) {
         hooks.responder()
       ],
       create: [
-        hooks.publishEvent('action.played', { prefix: 'playing' })
+        hooks.publishEvent('action.play', { prefix: 'playing' })
       ]
     }
   };
