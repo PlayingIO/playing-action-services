@@ -22,6 +22,7 @@ const createActivity = async function (app, userAction, verb, message) {
 // subscribe to action.play events
 export default function (app, options) {
   app.trans.add({
+    pubsub$: true,
     topic: 'playing.events',
     cmd: 'action.play'
   }, (resp) => {
