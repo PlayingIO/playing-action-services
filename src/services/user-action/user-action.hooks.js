@@ -4,6 +4,7 @@ import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 
 import UserActionEntity from '../../entities/action.entity';
+import notifier from './user-action.notifier';
 
 export default function (options = {}) {
   return {
@@ -40,7 +41,7 @@ export default function (options = {}) {
         hooks.responder()
       ],
       create: [
-        hooks.publishEvent('action.play', { prefix: 'playing' })
+        notifier('action.play')
       ]
     }
   };
