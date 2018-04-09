@@ -48,7 +48,7 @@ export class UserActionService extends Service {
     params = Object.assign({ query: {} }, params);
     assert(params.query.user, 'params.query.user not provided');
     params.query.action = params.query.action || id;
-    return this._first(null, null, params);
+    return this.first(null, null, params);
   }
 
   /**
@@ -68,7 +68,7 @@ export class UserActionService extends Service {
       query: { $select: ['rules.rewards.metric', '*'] }
     });
     // upsert a user action
-    const saveUserAction = (data) => super._upsert(null, data, {
+    const saveUserAction = (data) => super.upsert(null, data, {
       query: { action: data.action, user: data.user }
     });
 
