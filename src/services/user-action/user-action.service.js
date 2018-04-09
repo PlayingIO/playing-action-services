@@ -112,7 +112,7 @@ export class UserActionService extends Service {
   /**
    * Active actions for current player
    */
-  async _active (id, data, params) {
+  async active (id, data, params) {
     params = fp.assign({ query: {} }, params);
     assert(params.user, 'params.user not provided');
 
