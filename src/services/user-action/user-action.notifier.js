@@ -8,14 +8,12 @@ export default function (event) {
         actor: `user:${result.user}`,
         verb: verb,
         object: `action:${result.action}`,
-        foreignId: `userAction:${result.id}`
-      };
-      const extra = {
+        foreignId: `userAction:${result.id}`,
         message: message,
         count: result.count,
         rewards: result.rewards
       };
-      await feeds.addActivity(context.app, activity, extra).feeds(
+      await feeds.addActivity(context.app, activity,
         `user:${result.user}`,         // add to player's activity log
         `notification:${result.user}`  // add to notification stream of the player
       );
