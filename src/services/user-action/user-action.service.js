@@ -98,7 +98,7 @@ export class UserActionService extends Service {
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
     if (rewards.length > 0) {
-      userAction.rewards = await metrics.createUserMetrics(this.app)(data.user, rewards, data.variables);
+      userAction.rewards = await metrics.createUserMetrics(this.app, data.user, rewards, data.variables);
     } else {
       userAction.rewards = [];
     }
