@@ -10,7 +10,7 @@ import UserActionModel from '../../models/user-action.model';
 import defaultHooks from './user-action.hooks';
 import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
 
-const debug = makeDebug('playing:user-actions-services:user-actions');
+const debug = makeDebug('playing:actions-services:user-actions');
 
 const defaultOptions = {
   name: 'user-actions'
