@@ -56,10 +56,7 @@ export class UserActionService extends Service {
    * play a user action (count and reward)
    */
   async create (data, params) {
-    assert(data.action, 'data.action is not provided.');
-    assert(data.user, 'data.user is not provided.');
     assert(params.user, 'params.user is not provided');
-    data.variables = data.variables || {};
     delete data.count;
 
     const svcActions = this.app.service('actions');
