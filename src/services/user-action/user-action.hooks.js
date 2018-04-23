@@ -2,8 +2,10 @@ import { iff, isProvider } from 'feathers-hooks-common';
 import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
+import { sanitize, validate } from 'mostly-feathers-validate';
 
 import UserActionEntity from '../../entities/action.entity';
+import accepts from './user-action.accepts';
 import notifier from './user-action.notifier';
 
 export default function (options = {}) {
@@ -19,7 +21,9 @@ export default function (options = {}) {
       find: [],
       create: [
         iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' }))
+          associateCurrentUser({ idField: 'id', as: 'user' })),
+        sanitize(accepts),
+        validate(accepts)
       ],
       update: [
         iff(isProvider('external'),
