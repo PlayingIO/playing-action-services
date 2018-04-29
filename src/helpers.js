@@ -1,5 +1,3 @@
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as rules } from 'playing-rule-services';
 
 export const fulfillActionRequires = (action, user) => {
