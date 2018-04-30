@@ -18,7 +18,7 @@ const defaultOptions = {
 
 export class UserActionService extends Service {
   constructor (options) {
-    options = Object.assign({}, defaultOptions, options);
+    options = fp.assign(defaultOptions, options);
     super(options);
   }
 
@@ -161,7 +161,7 @@ export class UserActionService extends Service {
 }
 
 export default function init (app, options, hooks) {
-  options = Object.assign({ ModelName: 'user-action' }, options);
+  options = fp.assign({ ModelName: 'user-action' }, options);
   return createService(app, UserActionService, UserActionModel, options);
 }
 
