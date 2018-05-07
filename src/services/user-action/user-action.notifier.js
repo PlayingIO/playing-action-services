@@ -3,26 +3,26 @@ import { helpers as feeds } from 'playing-feed-services';
 
 export default function (event) {
   return context => {
-    const createActivity = async function (result, verb, message) {
+    const createActivity = async function (userAction, verb, message) {
       const activity = {
-        actor: `user:${result.user}`,
+        actor: `user:${userAction.user}`,
         verb: verb,
-        object: `action:${result.action}`,
-        foreignId: `userAction:${result.id}`,
+        object: `action:${userAction.action}`,
+        foreignId: `userAction:${userAction.id}`,
         message: message,
-        count: result.count,
-        rewards: result.rewards
+        count: userAction.count,
+        rewards: userAction.rewards
       };
       await feeds.addActivity(context.app, activity,
-        `user:${result.user}`,         // add to player's activity log
-        `notification:${result.user}`  // add to notification stream of the player
+        `user:${userAction.user}`,         // add to player's activity log
+        `notification:${userAction.user}`  // add to notification stream of the player
       );
     };
 
-    const result = helpers.getHookData(context);
+    const userAction = helpers.getHookData(context);
     switch (event) {
       case 'action.play':
-        createActivity(result, event, 'Play an action');
+        createActivity(userAction, event, 'Play an action');
         break;
     }
   };
