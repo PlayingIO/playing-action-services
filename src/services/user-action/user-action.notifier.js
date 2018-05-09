@@ -9,6 +9,7 @@ export default function (event) {
         verb: verb,
         object: `action:${userAction.action}`,
         foreignId: `userAction:${userAction.id}`,
+        time: new Date().toISOString(),
         message: message,
         count: userAction.count,
         rewards: userAction.rewards
