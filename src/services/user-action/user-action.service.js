@@ -49,7 +49,7 @@ export class UserActionService extends Service {
     params = Object.assign({ query: {} }, params);
     assert(params.query.user, 'params.query.user not provided');
     params.query.action = params.query.action || id;
-    return this.first(null, null, params);
+    return this.first(params);
   }
 
   /**
