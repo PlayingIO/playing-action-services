@@ -1,12 +1,13 @@
-import { iff, isProvider } from 'feathers-hooks-common';
+import { iff, isProvider, disallow } from 'feathers-hooks-common';
 import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
+import { hooks as feeds } from 'playing-feed-services';
 
 import UserActionEntity from '../../entities/action.entity';
 import accepts from './user-action.accepts';
-import notifier from './user-action.notifier';
+import notifiers from './user-action.notifiers';
 
 export default function (options = {}) {
   return {
@@ -17,24 +18,14 @@ export default function (options = {}) {
           queryWithCurrentUser({ idField: 'id', as: 'user' })),
         cache(options.cache)
       ],
-      get: [],
-      find: [],
       create: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.discardFields('count', 'limit'),
         sanitize(accepts),
         validate(accepts)
       ],
-      update: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('createdAt', 'updatedAt', 'destroyedAt')
-      ],
-      patch: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('createdAt', 'updatedAt', 'destroyedAt')
-      ]
+      update: disallow('external'),
+      patch: disallow('external'),
+      remove: disallow('external')
     },
     after: {
       all: [
@@ -45,7 +36,7 @@ export default function (options = {}) {
         hooks.responder()
       ],
       create: [
-        notifier('action.play')
+        feeds.notify('action.play', notifiers),
       ]
     }
   };
