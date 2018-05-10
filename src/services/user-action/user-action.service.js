@@ -56,9 +56,6 @@ export class UserActionService extends Service {
    * play a user action (count and reward)
    */
   async create (data, params) {
-    assert(params.user, 'params.user is not provided');
-    delete data.count;
-
     const svcActions = this.app.service('actions');
 
     // get action with rewards to fulfill it
@@ -67,11 +64,12 @@ export class UserActionService extends Service {
     });
     // upsert a user action
     const saveUserAction = (data) => super.upsert(null, data, {
-      query: { action: data.action, user: data.user }
+      query: { action: data.action, user: params.user.id }
     });
 
     const action = await getAction(data.action);
     assert(action, 'data.action is not exists.');
+    data.name = action.name; // for cache
 
     // save user's action
     let userAction = await saveUserAction(data);
@@ -95,7 +93,7 @@ export class UserActionService extends Service {
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
     if (rewards.length > 0) {
-      userAction.rewards = await metrics.createUserMetrics(this.app, data.user, rewards, data.variables);
+      userAction.rewards = await metrics.createUserMetrics(this.app, params.user.id, rewards, data.variables);
     } else {
       userAction.rewards = [];
     }
@@ -104,7 +102,9 @@ export class UserActionService extends Service {
     const events = await rules.processUserRules(this.app)(params.user);
     debug('process rules', events && events.length);
 
-    return userAction;
+    params.locals = { userAction }; // for notifier
+
+    return { action: userAction, events };
   }
 
   /**
