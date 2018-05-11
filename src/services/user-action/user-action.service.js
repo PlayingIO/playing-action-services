@@ -30,7 +30,7 @@ export class UserActionService extends Service {
    * find user actions of current user
    */
   async find (params) {
-    params = fp.assign({ query: {} }, params);
+    params = { query: {}, ...params };
     assert(params.query.user, 'params.query.user not provided');
     return super.find(params);
   }
@@ -43,7 +43,7 @@ export class UserActionService extends Service {
       return super._action('get', id, null, params);
     }
 
-    params = fp.assign({ query: {} }, params);
+    params = { query: {}, ...params };
     assert(params.query.user, 'params.query.user not provided');
     params.query.action = params.query.action || id;
     return this.first(params);
@@ -108,7 +108,7 @@ export class UserActionService extends Service {
    * Active actions for current player
    */
   async active (params) {
-    params = fp.assign({ query: {} }, params);
+    params = { query: {}, ...params };
     assert(params.user, 'params.user not provided');
 
     const svcActions = this.app.service('actions');
