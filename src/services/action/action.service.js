@@ -25,7 +25,7 @@ export class ActionService extends Service {
 }
 
 export default function init (app, options, hooks) {
-  options = fp.assign({ ModelName: 'action' }, options);
+  options = { ModelName: 'action', ...options };
   return createService(app, ActionService, ActionModel, options);
 }
 
