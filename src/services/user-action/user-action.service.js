@@ -105,9 +105,9 @@ export class UserActionService extends Service {
   }
 
   /**
-   * Active actions for current player
+   * List of all available actions for current player
    */
-  async active (params) {
+  async actions (params) {
     params = { query: {}, ...params };
     assert(params.user, 'params.user not provided');
 
