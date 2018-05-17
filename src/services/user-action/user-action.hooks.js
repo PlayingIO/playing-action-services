@@ -1,5 +1,5 @@
 import { iff, isProvider, disallow } from 'feathers-hooks-common';
-import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
+import { queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
@@ -25,9 +25,9 @@ export default function (options = {}) {
           queryWithCurrentUser({ idField: 'id', as: 'user' })),
       ],
       create: [
-        hooks.discardFields('count', 'limit'),
         sanitize(accepts),
-        validate(accepts)
+        validate(accepts),
+        hooks.discardFields('count', 'limit'),
       ],
       update: disallow('external'),
       patch: disallow('external'),

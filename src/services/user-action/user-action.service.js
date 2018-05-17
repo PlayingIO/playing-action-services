@@ -7,7 +7,7 @@ import { helpers as rules } from 'playing-rule-services';
 
 import UserActionModel from '../../models/user-action.model';
 import defaultHooks from './user-action.hooks';
-import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
+import { fulfillActionRewards } from '../../helpers';
 
 const debug = makeDebug('playing:actions-services:user-actions');
 
@@ -27,7 +27,7 @@ export class UserActionService extends Service {
   }
 
   /**
-   * find user actions of current user
+   * Find user actions of current user
    */
   async find (params) {
     params = { query: {}, ...params };
@@ -36,13 +36,9 @@ export class UserActionService extends Service {
   }
 
   /**
-   * get user actions by action id
+   * Get user actions by action id
    */
   async get (id, params) {
-    if (this._isAction(id, params)) {
-      return super._action('get', id, null, params);
-    }
-
     params = { query: {}, ...params };
     assert(params.query.user, 'params.query.user not provided');
     params.query.action = params.query.action || id;
@@ -50,7 +46,7 @@ export class UserActionService extends Service {
   }
 
   /**
-   * play a user action (count and reward)
+   * Play a user action (count and reward)
    */
   async create (data, params) {
     const svcActions = this.app.service('actions');
@@ -102,58 +98,6 @@ export class UserActionService extends Service {
     params.locals = { userAction }; // for notifier
 
     return { action: userAction, events };
-  }
-
-  /**
-   * List of all available actions for current player
-   */
-  async actions (params) {
-    params = { query: {}, ...params };
-    assert(params.user, 'params.user not provided');
-
-    const svcActions = this.app.service('actions');
-
-    // get available actions
-    const getAllActions = async () => svcActions.find({
-      query: { $select: ['rules.rewards.metric', '*'] },
-      paginate: false
-    });
-    // get user-actions of provided actions
-    const getUserActions = async (actions) => {
-      return super.find({
-        query: { action: { $in: fp.map(fp.prop('id'), actions) } },
-        paginate: false
-      });
-    };
-
-    // filter actions by requires
-    const fulfillActions = (actions => {
-      const activeActions = fp.reduce((arr, action) => {
-        // filter by visibility requirements
-        if (fulfillActionRequires(action, params.user)) {
-          // filter by the rule requirements
-          const rewards = fulfillActionRewards(action, params.user);
-          action = fp.omit(['rules', 'requires', 'rate'], action);
-          action.rewards = rewards;
-          return arr.concat(action);
-        }
-        return arr;
-      }, [], actions);
-      return activeActions;
-    });
-
-    // assoc count from user-actions to active actions
-    const assocActionsCount = (actions, userActions) => {
-      return fp.map(action => {
-        const userAction = fp.find(fp.propEq('action', action.id), userActions);
-        return fp.assoc('count', userAction && userAction.count || 0, action);
-      }, actions);
-    };
-
-    const allActions = await getAllActions();
-    const activeActions = fulfillActions(allActions);
-    const userActions = await getUserActions(activeActions);
-    return assocActionsCount(activeActions, userActions);
   }
 }
 
