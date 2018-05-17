@@ -14,9 +14,15 @@ export default function (options = {}) {
     before: {
       all: [
         hooks.authenticate('jwt', options.auth, 'scores,actions'),
+        cache(options.cache)
+      ],
+      find: [
         iff(isProvider('external'),
           queryWithCurrentUser({ idField: 'id', as: 'user' })),
-        cache(options.cache)
+      ],
+      get: [
+        iff(isProvider('external'),
+          queryWithCurrentUser({ idField: 'id', as: 'user' })),
       ],
       create: [
         hooks.discardFields('count', 'limit'),
