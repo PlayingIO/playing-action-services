@@ -11,6 +11,10 @@ export default function (options = {}) {
       all: [
         hooks.authenticate('jwt', options.auth, 'scores,actions'),
         cache(options.cache)
+      ],
+      find: [
+        iff(isProvider('external'),
+          queryWithCurrentUser({ idField: 'id', as: 'user' })),
       ]
     },
     after: {
