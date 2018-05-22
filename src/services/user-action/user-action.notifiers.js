@@ -6,6 +6,7 @@ import { createActionActivity } from '../../helpers';
 // play action activity
 const playAction = (context) => {
   const userAction = helpers.getHookData(context);
+  if (!userAction) return;
   const actor = context.params.user.id;
   const custom = {
     actor: `user:${actor}`,
