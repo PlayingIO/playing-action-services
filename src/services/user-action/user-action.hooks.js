@@ -3,7 +3,7 @@ import { queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
-import { hooks as feeds } from 'playing-feed-services';
+import feeds from 'playing-feed-common';
 
 import UserActionEntity from '../../entities/action.entity';
 import accepts from './user-action.accepts';
