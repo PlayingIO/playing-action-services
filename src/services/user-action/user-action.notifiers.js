@@ -1,5 +1,4 @@
 import { helpers } from 'mostly-feathers-mongoose';
-import { helpers as feeds } from 'playing-feed-services';
 
 import { createActionActivity } from '../../helpers';
 
