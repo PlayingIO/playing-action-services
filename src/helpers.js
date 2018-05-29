@@ -1,5 +1,5 @@
 import { helpers } from 'mostly-feathers-mongoose';
-import { helpers as rules } from 'playing-rule-services';
+import rules from 'playing-rule-common';
 
 export const fulfillActionRequires = (action, user) => {
   const variables = rules.parseVariables(action.variables);

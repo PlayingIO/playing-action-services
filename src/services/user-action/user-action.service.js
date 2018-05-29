@@ -3,7 +3,7 @@ import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
-import { helpers as rules } from 'playing-rule-services';
+import rules from 'playing-rule-common';
 
 import UserActionModel from '../../models/user-action.model';
 import defaultHooks from './user-action.hooks';
