@@ -2,7 +2,7 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
-import { helpers as metrics } from 'playing-metric-services';
+import metrics from 'playing-metric-common';
 import rules from 'playing-rule-common';
 
 import UserActionModel from '../../models/user-action.model';
