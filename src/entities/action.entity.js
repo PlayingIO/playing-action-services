@@ -1,8 +1,8 @@
 import Entity from 'mostly-entity';
-import { entities as contents } from 'playing-content-services';
+import { BlobEntity } from 'playing-content-common';
 
 const ActionEntity = new Entity('Action', {
-  image: { using: contents.BlobEntity }
+  image: { using: BlobEntity }
 });
 
 ActionEntity.excepts('updatedAt', 'destroyedAt');
