@@ -1,7 +1,7 @@
 Playing Game Actions Services
 =============================
 
-Game actions management microservices for playful applications.
+Game actions management microservices for building playful applications.
 
 # Usage
 
