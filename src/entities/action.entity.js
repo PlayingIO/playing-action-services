@@ -5,6 +5,6 @@ const ActionEntity = new Entity('Action', {
   image: { using: BlobEntity }
 });
 
-ActionEntity.excepts('_id');
+ActionEntity.discard('_id');
 
 export default ActionEntity.asImmutable();
