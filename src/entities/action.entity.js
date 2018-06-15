@@ -5,6 +5,6 @@ const ActionEntity = new Entity('Action', {
   image: { using: BlobEntity }
 });
 
-ActionEntity.excepts('updatedAt', 'destroyedAt');
+ActionEntity.excepts('_id');
 
 export default ActionEntity.asImmutable();
