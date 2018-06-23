@@ -4,4 +4,4 @@ const UserActionEntity = new Entity('UserAction');
 
 UserActionEntity.discard('_id');
 
-export default UserActionEntity.asImmutable();
+export default UserActionEntity.freeze();
