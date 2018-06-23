@@ -7,4 +7,4 @@ const ActionEntity = new Entity('Action', {
 
 ActionEntity.discard('_id');
 
-export default ActionEntity.asImmutable();
+export default ActionEntity.freeze();
