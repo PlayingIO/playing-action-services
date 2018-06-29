@@ -31,7 +31,7 @@ export class UserActionService extends Service {
    */
   async find (params) {
     params = { query: {}, ...params };
-    assert(params.query.user, 'params.query.user not provided');
+    assert(params.query.user, 'query.user not provided');
     return super.find(params);
   }
 
@@ -40,7 +40,7 @@ export class UserActionService extends Service {
    */
   async get (id, params) {
     params = { query: {}, ...params };
-    assert(params.query.user, 'params.query.user not provided');
+    assert(params.query.user, 'query.user not provided');
     params.query.action = params.query.action || id;
     return this.first(params);
   }
@@ -61,7 +61,7 @@ export class UserActionService extends Service {
     });
 
     const action = await getAction(data.action);
-    assert(action, 'data.action is not exists.');
+    assert(action, 'action is not exists.');
     data.name = action.name; // for cache
 
     // save user's action

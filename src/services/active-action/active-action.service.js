@@ -28,7 +28,7 @@ export class ActiveActionService {
    */
   async find (params) {
     params = { query: {}, ...params };
-    assert(params.user, 'params.user not provided');
+    assert(params.user, 'user not provided');
 
     const svcActions = this.app.service('actions');
     const svcUserActions = this.app.service('user-actions');
