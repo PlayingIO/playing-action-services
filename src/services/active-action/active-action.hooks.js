@@ -1,4 +1,3 @@
-import { iff, isProvider } from 'feathers-hooks-common';
 import { queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
@@ -13,8 +12,7 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        iff(isProvider('external'),
-          queryWithCurrentUser({ idField: 'id', as: 'user' })),
+        queryWithCurrentUser({ idField: 'id', as: 'user' }),
       ]
     },
     after: {

@@ -1,4 +1,4 @@
-import { iff, isProvider, disallow } from 'feathers-hooks-common';
+import { disallow } from 'feathers-hooks-common';
 import { queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
@@ -17,12 +17,10 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        iff(isProvider('external'),
-          queryWithCurrentUser({ idField: 'id', as: 'user' })),
+        queryWithCurrentUser({ idField: 'id', as: 'user' }),
       ],
       get: [
-        iff(isProvider('external'),
-          queryWithCurrentUser({ idField: 'id', as: 'user' })),
+        queryWithCurrentUser({ idField: 'id', as: 'user' }),
       ],
       create: [
         sanitize(accepts),
