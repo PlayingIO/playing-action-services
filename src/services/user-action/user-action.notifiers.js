@@ -5,8 +5,9 @@ import { createActionActivity } from '../../helpers';
 // play action activity
 const playAction = (context) => {
   const userAction = helpers.getHookData(context);
-  if (!userAction) return;
   const actor = helpers.getCurrentUser(context);
+  if (!userAction || !actor) return;
+
   const custom = {
     actor: `user:${actor}`,
     verb: 'action.play',
