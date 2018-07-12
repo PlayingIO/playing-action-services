@@ -1,6 +1,6 @@
-import { plugins } from 'mostly-feathers-mongoose';
-import { schemas as contents } from 'playing-content-common';
-import { schemas as rules } from 'playing-rule-common';
+const { plugins } = require('mostly-feathers-mongoose');
+const { schemas: contents } = require('playing-content-common');
+const { schemas: rules } = require('playing-rule-common');
 
 const options = {
   timestamps: true
@@ -24,11 +24,10 @@ const fields = {
   tags: [{ type: String }],                  // the tags of the rule
 };
 
-export default function model (app, name) {
+module.exports = function model (app, name) {
   const mongoose = app.get('mongoose');
   const schema = new mongoose.Schema(fields, options);
   schema.plugin(plugins.trashable);
   return mongoose.model(name, schema);
-}
-
-model.schema = fields;
+};
+module.exports.schema = fields;
