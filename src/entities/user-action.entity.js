@@ -1,7 +1,7 @@
-import Entity from 'mostly-entity';
+const Entity = require('mostly-entity');
 
 const UserActionEntity = new Entity('UserAction');
 
 UserActionEntity.discard('_id');
 
-export default UserActionEntity.freeze();
+module.exports = UserActionEntity.freeze();
