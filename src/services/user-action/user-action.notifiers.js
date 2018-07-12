@@ -1,6 +1,6 @@
-import { helpers } from 'mostly-feathers-mongoose';
+const { helpers } = require('mostly-feathers-mongoose');
 
-import { createActionActivity } from '../../helpers';
+const { createActionActivity } = require('../../helpers');
 
 // play action activity
 const playAction = (context) => {
@@ -22,7 +22,7 @@ const playAction = (context) => {
   ];
 };
 
-export default {
+module.exports = {
   'action.play': playAction
 };
 

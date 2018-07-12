@@ -1,7 +1,7 @@
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-validate';
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-validate');
 
-export default function accepts (context) {
+module.exports = function accepts (context) {
   // validation rules
   const action = { arg: 'action', type: 'string', required: true, description: 'Action id' };
   const variables = { arg: 'variables', type: 'object', default: {}, description: 'Variables of action' };
@@ -9,4 +9,4 @@ export default function accepts (context) {
   return {
     create: [ action, variables ]
   };
-}
+};

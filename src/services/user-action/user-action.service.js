@@ -1,13 +1,13 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import { Service, helpers, createService } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
-import metrics from 'playing-metric-common';
-import rules from 'playing-rule-common';
+const assert = require('assert');
+const makeDebug = require('debug');
+const { Service, helpers, createService } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
+const metrics = require('playing-metric-common');
+const rules = require('playing-rule-common');
 
-import UserActionModel from '../../models/user-action.model';
-import defaultHooks from './user-action.hooks';
-import { fulfillActionRewards } from '../../helpers';
+const UserActionModel = require('../../models/user-action.model');
+const defaultHooks = require('./user-action.hooks');
+const { fulfillActionRewards } = require('../../helpers');
 
 const debug = makeDebug('playing:actions-services:user-actions');
 
@@ -15,7 +15,7 @@ const defaultOptions = {
   name: 'user-actions'
 };
 
-export class UserActionService extends Service {
+class UserActionService extends Service {
   constructor (options) {
     options = fp.assignAll(defaultOptions, options);
     super(options);
@@ -101,9 +101,8 @@ export class UserActionService extends Service {
   }
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   options = { ModelName: 'user-action', ...options };
   return createService(app, UserActionService, UserActionModel, options);
-}
-
-init.Service = UserActionService;
+};
+module.exports.Service = UserActionService;

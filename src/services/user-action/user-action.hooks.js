@@ -1,15 +1,15 @@
-import { disallow } from 'feathers-hooks-common';
-import { queryWithCurrentUser } from 'feathers-authentication-hooks';
-import { hooks } from 'mostly-feathers-mongoose';
-import { cache } from 'mostly-feathers-cache';
-import { sanitize, validate } from 'mostly-feathers-validate';
-import feeds from 'playing-feed-common';
+const { disallow } = require('feathers-hooks-common');
+const { queryWithCurrentUser } = require('feathers-authentication-hooks');
+const { hooks } = require('mostly-feathers-mongoose');
+const { cache } = require('mostly-feathers-cache');
+const { sanitize, validate } = require('mostly-feathers-validate');
+const feeds = require('playing-feed-common');
 
-import UserActionEntity from '../../entities/action.entity';
-import accepts from './user-action.accepts';
-import notifiers from './user-action.notifiers';
+const UserActionEntity = require('../../entities/action.entity');
+const accepts = require('./user-action.accepts');
+const notifiers = require('./user-action.notifiers');
 
-export default function (options = {}) {
+module.exports = function (options = {}) {
   return {
     before: {
       all: [
@@ -44,4 +44,4 @@ export default function (options = {}) {
       ]
     }
   };
-}
+};

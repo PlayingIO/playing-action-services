@@ -1,10 +1,10 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import { Service, helpers, createService } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
+const assert = require('assert');
+const makeDebug = require('debug');
+const { Service, helpers, createService } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
 
-import defaultHooks from './active-action.hooks';
-import { fulfillActionRequires, fulfillActionRewards } from '../../helpers';
+const defaultHooks = require('./active-action.hooks');
+const { fulfillActionRequires, fulfillActionRewards } = require('../../helpers');
 
 const debug = makeDebug('playing:actions-services:active-actions');
 
@@ -12,7 +12,7 @@ const defaultOptions = {
   name: 'active-actions'
 };
 
-export class ActiveActionService {
+class ActiveActionService {
   constructor (options) {
     this.options = fp.assignAll(defaultOptions, options);
     this.name = this.options.name;
@@ -81,8 +81,7 @@ export class ActiveActionService {
   }
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   return new ActiveActionService(options);
-}
-
-init.Service = ActiveActionService;
+};
+module.exports.Service = ActiveActionService;
