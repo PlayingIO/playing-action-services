@@ -82,7 +82,7 @@ class UserActionService extends Service {
       };
     }
     userAction = await super.patch(userAction.id, actionLimit);
-  
+
     // create the action rewards
     const rewards = fulfillActionRewards(action, params.user);
     if (rewards.length > 0) {
