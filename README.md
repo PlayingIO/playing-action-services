@@ -12,7 +12,7 @@ Please see the [documentation site](https://playingio.github.io) for more detail
 ## Installation
 
 ```bash
-npm install playing-action-services
+npm install playing-action-services --save
 ```
 
 # License
